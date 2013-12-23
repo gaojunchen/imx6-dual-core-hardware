@@ -141,7 +141,7 @@ static void update_to_display(int left, int top, int width, int height, int upda
 	int auto_update_mode = AUTO_UPDATE_MODE_REGION_MODE;
 	memset(&upd_data, 0, sizeof(mxcfb_update_data));
 
-    LOGI("update_to_display:left=%d, top=%d, width=%d, height=%d updatemode=%d\n", left, top, width, height,updatemode);
+    // LOGI("update_to_display:left=%d, top=%d, width=%d, height=%d updatemode=%d\n", left, top, width, height,updatemode);
 
 
     if((updatemode & EINK_WAVEFORM_MODE_MASK) == EINK_WAVEFORM_MODE_DU)
