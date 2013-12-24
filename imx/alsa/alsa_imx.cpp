@@ -36,6 +36,7 @@
 #define DEVICE_HDMI       4
 #define DEVICE_CS42888    5
 #define DEVICE_WM8962     6
+#define DEVICE_WM8960     7
 
 #ifdef  BOARD_IS_SABRELITE
 #define AUDIOCARD_DEVICE_SGTL5000_HIFI "HiFi sgtl5000-0"
@@ -56,6 +57,7 @@
 #define AUDIOCARD_DEVICE_SPDIF "IMX SPDIF mxc-spdif-0"
 #define AUDIOCARD_DEVICE_CS42888 "HiFi CS42888-0"
 #define AUDIOCARD_DEVICE_WM8962 "HiFi wm8962-0"
+#define AUDIOCARD_DEVICE_WM8960 "HiFi wm8960-0"
 #endif
 
 
@@ -79,6 +81,7 @@ char wm8958cardname_0[32];
 char wm8958cardname_1[32];
 char wm8958cardname_2[32];
 char wm8962cardname[32];
+char wm8960cardname[32];
 int  selecteddevice ;
     
 static hw_module_methods_t s_module_methods = {
@@ -261,6 +264,7 @@ const char *deviceName(alsa_handle_t *alsa_handle, uint32_t device, int mode, in
     bool havewm8958device =false;
     bool havecs42888device =false;
     bool havewm8962device = false;
+    bool havewm8960device = false;
 
     card = -1;
     if (snd_card_next(&card) < 0 || card < 0) {
@@ -342,6 +346,11 @@ const char *deviceName(alsa_handle_t *alsa_handle, uint32_t device, int mode, in
                  else               sprintf(wm8962cardname, "hw:%d,%d", card, dev);
                  havewm8962device =  true;
             }
+            if(strcmp(snd_pcm_info_get_id(pcminfo),AUDIOCARD_DEVICE_WM8960)==0) {
+                 if(card_device==0) sprintf(wm8960cardname, "hw:0%d", card);
+                 else               sprintf(wm8960cardname, "hw:%d,%d", card, dev);
+                 havewm8960device =  true;
+            }
             cardnum++;
         }
         snd_ctl_close(handle);
@@ -392,7 +401,13 @@ const char *deviceName(alsa_handle_t *alsa_handle, uint32_t device, int mode, in
         selecteddevice = DEVICE_WM8962;
         alsa_handle->devName = AUDIOCARD_DEVICE_WM8962;
         return wm8962cardname;
-    }else if(havehdmidevice)
+    }else if(havewm8960device)
+    {
+        selecteddevice = DEVICE_WM8960;
+        alsa_handle->devName = AUDIOCARD_DEVICE_WM8960;
+        return wm8960cardname;
+    }
+    else if(havehdmidevice)
     {
         selecteddevice = DEVICE_HDMI;
         alsa_handle->devName = AUDIOCARD_DEVICE_HDMI;
@@ -710,11 +725,43 @@ void setDefaultControls(uint32_t devices, int mode, const char *cardname)
                  ctl->set("Speaker Volume", 127, -1);
               }
         }
+        if(selecteddevice == DEVICE_WM8960)
+        {
+#if 1//Danny: only enable the headphone path
+                 ctl->set("Speaker Switch", 0, -1);
+                 ctl->set("PCM Playback Switch", 1, -1);
+                 ctl->set("Headphone Playback Volume", 127, -1);
+#else
+              if(devices & AudioSystem::DEVICE_OUT_WIRED_HEADSET ||
+                   devices & AudioSystem::DEVICE_OUT_WIRED_HEADPHONE ){
+                 ctl->set("Speaker Switch", 0, -1);
+                 ctl->set("Headphone Switch", 1, -1);
+                 ctl->set("Headphone Volume", 127, -1);
+              }else {
+		 ctl->set("Headphone Switch", 0, -1);
+                 ctl->set("Speaker Switch", 1, -1);
+                 ctl->set("Speaker Volume", 127, -1);
+              }
+#endif
+        }
     }
 
     if(devices & IMX_IN_CODEC_DEFAULT)
     {
         if(selecteddevice == DEVICE_WM8962)
+        {
+             if(devices & AudioSystem::DEVICE_IN_BUILTIN_MIC){
+                ctl->set("Capture Switch", 1, -1);
+                ctl->set("Capture Volume", 63, -1);
+                ctl->set("MIXINR IN3R Switch", 1, 0);
+                ctl->set("MIXINR IN3R Volume", 7, 0);
+                //ctl->set("INPGAR IN3R Switch", 1, 0);
+                //ctl->set("MIXINR PGA Switch", 1, 0);
+                //ctl->set("MIXINR PGA Volume", 7, 0);
+                ctl->set("Digital Capture Volume", 127, -1);
+             }
+        }
+        if(selecteddevice == DEVICE_WM8960)
         {
              if(devices & AudioSystem::DEVICE_IN_BUILTIN_MIC){
                 ctl->set("Capture Switch", 1, -1);

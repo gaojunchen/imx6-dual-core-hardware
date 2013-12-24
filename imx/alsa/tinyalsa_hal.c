@@ -40,6 +40,7 @@
 
 #include "audio_hardware.h"
 #include "config_wm8962.h"
+#include "config_wm8960.h"
 #include "config_wm8958.h"
 #include "config_hdmi.h"
 #include "config_usbaudio.h"
@@ -87,12 +88,13 @@
 #define PRODUCT_DEVICE_PROPERTY "ro.product.device"
 #define PRODUCT_NAME_PROPERTY   "ro.product.name"
 #define PRODUCT_DEVICE_IMX      "imx"
-#define SUPPORT_CARD_NUM        6
+#define SUPPORT_CARD_NUM        7
 
 /*"null_card" must be in the end of this array*/
 struct audio_card *audio_card_list[SUPPORT_CARD_NUM] = {
     &wm8958_card,
     &wm8962_card,
+    &wm8960_card,
     &hdmi_card,
     &usbaudio_card,
     &spdif_card,
@@ -135,12 +137,17 @@ static int adev_get_rate_for_device(struct imx_audio_device *adev, uint32_t devi
 /* Returns true on devices that are toro, false otherwise */
 static int is_device_imx(void)
 {
+#if 1
+	//Danny: always return true
+	return 1;
+#else
     char property[PROPERTY_VALUE_MAX];
 
     property_get(PRODUCT_DEVICE_PROPERTY, property, PRODUCT_DEVICE_IMX);
 
     /* return true if the property matches the given value */
     return strcmp(property, PRODUCT_DEVICE_IMX) == 0;
+#endif
 }
 
 /* The enable flag when 0 makes the assumption that enums are disabled by
@@ -156,10 +163,12 @@ static int set_route_by_array(struct mixer *mixer, struct route_setting *route,
     /* Go through the route array and set each value */
     i = 0;
     while (route[i].ctl_name) {
+        LOGE("-----------   Setting: route: %s enable: %d", route[i].ctl_name, enable);
         ctl = mixer_get_ctl_by_name(mixer, route[i].ctl_name);
         if (!ctl)
             return -EINVAL;
 
+        LOGE("-----------   strval %s intval %d ", route[i].strval, route[i].intval);
         if (route[i].strval) {
             if (enable)
                 mixer_ctl_set_enum_by_string(ctl, route[i].strval);
@@ -2119,7 +2128,7 @@ static int adev_open(const hw_module_t* module, const char* name,
     for(i = 0; i < MAX_AUDIO_CARD_NUM; i++)
         set_route_by_array(adev->mixer[i], adev->card_list[i]->defaults, 1);
     adev->mode    = AUDIO_MODE_NORMAL;
-    adev->devices = AUDIO_DEVICE_OUT_SPEAKER | AUDIO_DEVICE_IN_BUILTIN_MIC;
+    adev->devices = AUDIO_DEVICE_OUT_WIRED_HEADPHONE | AUDIO_DEVICE_IN_BUILTIN_MIC;
     select_output_device(adev);
 
     adev->pcm_modem_dl  = NULL;
