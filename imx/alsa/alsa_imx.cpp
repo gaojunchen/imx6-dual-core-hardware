@@ -720,30 +720,25 @@ void setDefaultControls(uint32_t devices, int mode, const char *cardname)
                  ctl->set("Headphone Switch", 1, -1);
                  ctl->set("Headphone Volume", 127, -1);
               }else {
-		 ctl->set("Headphone Switch", 0, -1);
+				  ctl->set("Headphone Switch", 0, -1);
                  ctl->set("Speaker Switch", 1, -1);
                  ctl->set("Speaker Volume", 127, -1);
               }
         }
         if(selecteddevice == DEVICE_WM8960)
-        {
-#if 1//Danny: only enable the headphone path
-                 ctl->set("Speaker Switch", 0, -1);
-                 ctl->set("PCM Playback Switch", 1, -1);
-                 ctl->set("Headphone Playback Volume", 127, -1);
-#else
-              if(devices & AudioSystem::DEVICE_OUT_WIRED_HEADSET ||
-                   devices & AudioSystem::DEVICE_OUT_WIRED_HEADPHONE ){
-                 ctl->set("Speaker Switch", 0, -1);
-                 ctl->set("Headphone Switch", 1, -1);
-                 ctl->set("Headphone Volume", 127, -1);
-              }else {
-		 ctl->set("Headphone Switch", 0, -1);
-                 ctl->set("Speaker Switch", 1, -1);
-                 ctl->set("Speaker Volume", 127, -1);
-              }
-#endif
-        }
+		{
+			ctl->set("Left Output Mixer PCM Playback Switch", 1, -1);
+			ctl->set("Right Output Mixer PCM Playback Switch", 1, -1);
+			if(devices & AudioSystem::DEVICE_OUT_WIRED_HEADSET ||
+					devices & AudioSystem::DEVICE_OUT_WIRED_HEADPHONE ){
+				ctl->set("ClassD Speaker Control", 0, -1);
+				ctl->set("Headphone Playback Volume", 110, -1);
+			}else
+			{
+				ctl->set("ClassD Speaker Control", 3, -1);
+				ctl->set("Speaker Playback Volume", 110, -1);
+			}
+		}
     }
 
     if(devices & IMX_IN_CODEC_DEFAULT)
@@ -763,15 +758,14 @@ void setDefaultControls(uint32_t devices, int mode, const char *cardname)
         }
         if(selecteddevice == DEVICE_WM8960)
         {
-             if(devices & AudioSystem::DEVICE_IN_BUILTIN_MIC){
+             // if(devices & AudioSystem::DEVICE_IN_BUILTIN_MIC)
+			 {
                 ctl->set("Capture Switch", 1, -1);
                 ctl->set("Capture Volume", 63, -1);
-                ctl->set("MIXINR IN3R Switch", 1, 0);
-                ctl->set("MIXINR IN3R Volume", 7, 0);
-                //ctl->set("INPGAR IN3R Switch", 1, 0);
-                //ctl->set("MIXINR PGA Switch", 1, 0);
-                //ctl->set("MIXINR PGA Volume", 7, 0);
-                ctl->set("Digital Capture Volume", 127, -1);
+                ctl->set("Left Input Mixer Boost Switch", 1, 0);
+                ctl->set("Right Input Mixer Boost Switch", 1, 0);
+				ctl->set("Left Boost Mixer LINPUT2 Switch", 1, 0);
+				ctl->set("Analogue Input Control", 3, 0);
              }
         }
     }

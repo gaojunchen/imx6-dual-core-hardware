@@ -2128,7 +2128,7 @@ static int adev_open(const hw_module_t* module, const char* name,
     for(i = 0; i < MAX_AUDIO_CARD_NUM; i++)
         set_route_by_array(adev->mixer[i], adev->card_list[i]->defaults, 1);
     adev->mode    = AUDIO_MODE_NORMAL;
-    adev->devices = AUDIO_DEVICE_OUT_WIRED_HEADPHONE | AUDIO_DEVICE_IN_BUILTIN_MIC;
+    adev->devices = AUDIO_DEVICE_OUT_WIRED_HEADPHONE | AUDIO_DEVICE_IN_BUILTIN_MIC | AUDIO_DEVICE_IN_WIRED_HEADSET;
     select_output_device(adev);
 
     adev->pcm_modem_dl  = NULL;

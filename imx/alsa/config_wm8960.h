@@ -22,13 +22,17 @@
 
 
 #define MIXER_WM8960_SPEAKER_VOLUME                 "Speaker Playback Volume"
-#define MIXER_WM8960_SPEAKER_SWITCH                 "Left Speaker Output"
+#define MIXER_WM8960_SPEAKER_SWITCH                 "ClassD Speaker Control"
 #define MIXER_WM8960_HEADPHONE_VOLUME               "Headphone Playback Volume"
 #define MIXER_WM8960_HEADPHONE_LEFT_SWITCH          "Left Output Mixer PCM Playback Switch"
 #define MIXER_WM8960_HEADPHONE_RIGHT_SWITCH         "Right Output Mixer PCM Playback Switch"
 
+
 #define MIXER_WM8960_CAPTURE_SWITCH                 "Capture Switch"
 #define MIXER_WM8960_CAPTURE_VOLUME                 "Capture Volume"
+
+#define MIXER_WM8960_BOOST_SWITCH_L 				"Left Input Mixer Boost Switch"
+#define MIXER_WM8960_BOOST_SWITCH_R 				"RIGHT Input Mixer Boost Switch"
 
 #define MIXER_WM8960_INPGAR_IN3R_SWITCH             "INPGAR IN3R Switch"
 #define MIXER_WM8960_MIXINR_IN3R_SWITCH             "MIXINR IN3R Switch"
@@ -72,12 +76,10 @@ static struct route_setting bt_output_wm8960[] = {
 };
 
 static struct route_setting speaker_output_wm8960[] = {
-	/*
     {
         .ctl_name = MIXER_WM8960_SPEAKER_SWITCH,
-        .intval = 1,
+        .intval = 3,
     },
-	*/
     {
         .ctl_name = MIXER_WM8960_SPEAKER_VOLUME,
         .intval = 127,
@@ -116,8 +118,12 @@ static struct route_setting mm_main_mic_input_wm8960[] = {
         .intval = 1,
     },
     {
+        .ctl_name = MIXER_WM8960_BOOST_SWITCH_L,
+        .intval = 1,
+    },
+    {
         .ctl_name = MIXER_WM8960_CAPTURE_VOLUME,
-        .intval = 0,
+        .intval = 55,
     },
     {
         .ctl_name = MIXER_WM8960_DIGITAL_CAPTURE_VOLUME,
@@ -162,8 +168,12 @@ static struct route_setting mm_hs_mic_input_wm8960[] = {
         .intval = 1,
     },
     {
+        .ctl_name = MIXER_WM8960_BOOST_SWITCH_R,
+        .intval = 1,
+    },
+    {
         .ctl_name = MIXER_WM8960_CAPTURE_VOLUME,
-        .intval = 0,
+        .intval = 55,
     },
     {
         .ctl_name = MIXER_WM8960_DIGITAL_CAPTURE_VOLUME,
