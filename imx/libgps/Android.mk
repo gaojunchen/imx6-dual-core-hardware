@@ -1,5 +1,6 @@
 LOCAL_PATH := $(call my-dir)
 ifneq ($(TARGET_PRODUCT),sim)
+ifneq ($(TARGET_PRODUCT),WP001)
 # HAL module implemenation, not prelinked and stored in
 # hw/<GPS_HARDWARE_MODULE_ID>.<ro.hardware>.so
     ifeq ($(USE_ATHR_GPS_HARDWARE),true)
@@ -13,4 +14,5 @@ ifneq ($(TARGET_PRODUCT),sim)
         LOCAL_MODULE_TAGS := optional
         include $(BUILD_SHARED_LIBRARY)
     endif
+endif
 endif
