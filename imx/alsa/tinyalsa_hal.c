@@ -1720,7 +1720,16 @@ static int adev_set_parameters(struct audio_hw_device *dev, const char *kvpairs)
     char *str;
     char value[32];
     int ret;
+	unsigned int i;
     LOGW("set parameters %s",kvpairs);
+
+	if(!strncmp(kvpairs, "fm_route=", 9))
+	{
+		LOGW("Set FM route path [%d]", kvpairs[9]=='1'? 1: 0);
+		for(i = 0; i < MAX_AUDIO_CARD_NUM; i++)
+			set_route_by_array(adev->mixer[i], adev->card_list[i]->fm_output, kvpairs[9]=='1'? 1: 0);
+		return 0;
+	}
     parms = str_parms_create_str(kvpairs);
     ret = str_parms_get_str(parms, AUDIO_PARAMETER_KEY_TTY_MODE, value, sizeof(value));
     if (ret >= 0) {

@@ -45,6 +45,8 @@
 
 #define MIXER_WM8960_DIGITAL_PLAYBACK_VOLUME        "Playback Volume"
 
+#define MIXER_FM_OUTPUT_L 							"Left Output Mixer LINPUT3 Switch"
+#define MIXER_FM_OUTPUT_R 							"Right Output Mixer RINPUT3 Switch"
 
 /* These are values that never change */
 static struct route_setting defaults_wm8960[] = {
@@ -221,6 +223,19 @@ static struct route_setting mm_bt_mic_input_wm8960[] = {
     },
 };
 
+static struct route_setting fm_output_path_wm8960[] = {
+    {
+        .ctl_name = MIXER_FM_OUTPUT_L,
+        .intval = 1,
+    },
+    {
+        .ctl_name = MIXER_FM_OUTPUT_R,
+        .intval = 1,
+    },
+    {
+        .ctl_name = NULL,
+    },
+};
 /* ALSA cards for IMX, these must be defined according different board / kernel config*/
 static struct audio_card  wm8960_card = {
     .name = "wm8960-audio",
@@ -252,6 +267,7 @@ static struct audio_card  wm8960_card = {
     .mm_hs_mic_input     = mm_hs_mic_input_wm8960,
     .vx_bt_mic_input     = vx_bt_mic_input_wm8960,
     .mm_bt_mic_input     = mm_bt_mic_input_wm8960,
+	.fm_output 			 = fm_output_path_wm8960,
     .card                = 0,
     .out_rate            = 0,
     .in_rate             = 0,

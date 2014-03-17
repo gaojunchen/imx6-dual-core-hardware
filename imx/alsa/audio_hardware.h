@@ -56,6 +56,7 @@ struct audio_card{
     struct route_setting *mm_hs_mic_input;
     struct route_setting *vx_bt_mic_input;
     struct route_setting *mm_bt_mic_input;
+    struct route_setting *fm_output;
     int  card;
     int  out_rate;
     int  in_rate;
