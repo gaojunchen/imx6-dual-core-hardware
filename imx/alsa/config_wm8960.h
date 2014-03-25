@@ -233,6 +233,10 @@ static struct route_setting fm_output_path_wm8960[] = {
         .intval = 1,
     },
     {
+        .ctl_name = MIXER_WM8960_HEADPHONE_VOLUME,
+        .intval = 110,
+    },
+    {
         .ctl_name = NULL,
     },
 };
