@@ -37,6 +37,11 @@
 
 #include "MPLSensorSysApi.h"
 
+#include "LightSensor.h"
+#include "TempSensor.h"
+#include "HudimitySensor.h"
+#include "PressureSensor.h"
+
 /*****************************************************************************/
 
 #define DELAY_OUT_TIME 0x7FFFFFFF
@@ -50,6 +55,10 @@
 #define SENSORS_ACCELERATION     (1<<ID_A)
 #define SENSORS_MAGNETIC_FIELD   (1<<ID_M)
 #define SENSORS_ORIENTATION      (1<<ID_O)
+#define SENSORS_LIGHT            (1<<ID_L)
+#define SENSORS_PRESSURE         (1<<ID_P)
+#define SENSORS_HUMIDITY         (1<<ID_H)
+#define SENSORS_TEMPERATURE      (1<<ID_T)
 
 #define SENSORS_ROTATION_VECTOR_HANDLE  (ID_RV)
 #define SENSORS_LINEAR_ACCEL_HANDLE     (ID_LA)
@@ -59,6 +68,10 @@
 #define SENSORS_MAGNETIC_FIELD_HANDLE   (ID_M)
 #define SENSORS_ORIENTATION_HANDLE      (ID_O)
 
+#define SENSORS_LIGHT_HANDLE            (ID_L)
+#define SENSORS_PRESSURE_HANDLE         (ID_P)
+#define SENSORS_HUMIDITY_HANDLE         (ID_H)
+#define SENSORS_TEMPERATURE_HANDLE      (ID_T)
 
 #define AKM_FTRACE 0
 #define AKM_DEBUG 0
@@ -97,7 +110,22 @@ static const struct sensor_t sSensorList[] = {
           1, SENSORS_ORIENTATION_HANDLE,
           SENSOR_TYPE_ORIENTATION, 360.0f, 1.0f, 9.7f, 20000,{ } },
 
-
+      { "CM3232 Light Sensor",
+          "CM",
+          1, SENSORS_LIGHT_HANDLE,
+          SENSOR_TYPE_LIGHT, 65535.0f, 1.0f, 9.7f, 20000,{ } },
+      { "SHT21 Humidity Sensor",
+          "Sensirion",
+          1, SENSORS_HUMIDITY_HANDLE,
+          SENSOR_TYPE_RELATIVE_HUMIDITY, 99999.0f, 1.0f, 9.7f, 20000,{ } },
+      { "SHT21 Temperature Sensor",
+          "Sensirion",
+          1, SENSORS_TEMPERATURE_HANDLE,
+          SENSOR_TYPE_AMBIENT_TEMPERATURE, 100.0f, 1.0f, 9.7f, 20000,{ } },
+      { "MS5611 Pressure Sensor",
+          "MS",
+          1, SENSORS_PRESSURE_HANDLE,
+          SENSOR_TYPE_PRESSURE, 360.0f, 1.0f, 9.7f, 20000,{ } },
 };
 
 
@@ -143,6 +171,10 @@ private:
         mpl               = 0,  //all mpl entries must be consecutive and in this order
         mpl_accel,
         mpl_timer,
+        light,          //LightSensor
+        temperature,          //Temperature Sensor
+        hudimity,          //hudimity Sensor
+        pressure,          //pressure Sensor
         numSensorDrivers,       // wake pipe goes here
         mpl_power,              //special handle for MPL pm interaction
         numFds,
@@ -164,6 +196,14 @@ private:
             case ID_M:
             case ID_O:
                 return mpl;
+            case ID_L:
+                return light;
+            case ID_T:
+                return temperature;
+            case ID_H:
+                return hudimity;
+            case ID_P:
+                return pressure;
         }
         return -EINVAL;
     }
@@ -193,6 +233,26 @@ sensors_poll_context_t::sensors_poll_context_t()
     mPollFds[mpl_timer].fd = ((MPLSensor*)mSensors[mpl])->getTimerFd();
     mPollFds[mpl_timer].events = POLLIN;
     mPollFds[mpl_timer].revents = 0;
+
+    mSensors[light] = new LightSensor();
+    mPollFds[light].fd = mSensors[light]->getFd();
+    mPollFds[light].events = POLLIN;
+    mPollFds[light].revents = 0;
+
+    mSensors[temperature] = new TempSensor();
+    mPollFds[temperature].fd = mSensors[temperature]->getFd();
+    mPollFds[temperature].events = POLLIN;
+    mPollFds[temperature].revents = 0;
+
+    mSensors[hudimity] = new HudimitySensor();
+    mPollFds[hudimity].fd = mSensors[hudimity]->getFd();
+    mPollFds[hudimity].events = POLLIN;
+    mPollFds[hudimity].revents = 0;
+
+    mSensors[pressure] = new PressureSensor();
+    mPollFds[pressure].fd = mSensors[pressure]->getFd();
+    mPollFds[pressure].events = POLLIN;
+    mPollFds[pressure].revents = 0;
 
     int wakeFds[2];
     int result = pipe(wakeFds);

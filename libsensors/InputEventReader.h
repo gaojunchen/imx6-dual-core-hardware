@@ -14,53 +14,34 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_SENSORS_H
-#define ANDROID_SENSORS_H
+#ifndef ANDROID_INPUT_EVENT_READER_H
+#define ANDROID_INPUT_EVENT_READER_H
 
 #include <stdint.h>
 #include <errno.h>
 #include <sys/cdefs.h>
 #include <sys/types.h>
 
-#include <linux/input.h>
+/*****************************************************************************/
 
-#include <hardware/hardware.h>
-#include <hardware/sensors.h>
+struct input_event;
 
-__BEGIN_DECLS
+class InputEventCircularReader
+{
+    struct input_event* const mBuffer;
+    struct input_event* const mBufferEnd;
+    struct input_event* mHead;
+    struct input_event* mCurr;
+    ssize_t mFreeSpace;
+
+public:
+    InputEventCircularReader(size_t numEvents);
+    ~InputEventCircularReader();
+    ssize_t fill(int fd);
+    ssize_t readEvent(input_event const** events);
+    void next();
+};
 
 /*****************************************************************************/
 
-#ifndef ARRAY_SIZE
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
-#endif
-
-#define EVENT_TYPE_LIGHT ABS_MISC
-#define EVENT_TYPE_TEMP  ABS_RX
-#define EVENT_TYPE_HUDIMITY ABS_RY
-#define EVENT_TYPE_PRESSURE1 ABS_TILT_X
-#define EVENT_TYPE_PRESSURE2 ABS_TILT_Y
-
-#define ID_MPL_BASE (0)
-#define ID_RV (ID_MPL_BASE)
-#define ID_LA (ID_RV + 1)
-#define ID_GR (ID_LA + 1)
-#define ID_GY (ID_GR + 1)
-#define ID_A  (ID_GY + 1)
-#define ID_M  (ID_A + 1)
-#define ID_O  (ID_M + 1)
-
-#define ID_L  (ID_O + 1)
-#define ID_P  (ID_L + 1)
-#define ID_H  (ID_P + 1)
-#define ID_T  (ID_H + 1)
-
-/*****************************************************************************/
-
-/*
- * The SENSORS Module
- */
-
-__END_DECLS
-
-#endif  // ANDROID_SENSORS_H
+#endif  // ANDROID_INPUT_EVENT_READER_H

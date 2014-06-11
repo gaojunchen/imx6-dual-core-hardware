@@ -102,6 +102,11 @@ LOCAL_CFLAGS := -DLOG_TAG=\"Sensors\"
 
 LOCAL_SRC_FILES := sensors_mpl.cpp 
 LOCAL_SRC_FILES += SensorBase.cpp
+LOCAL_SRC_FILES += LightSensor.cpp \
+				   InputEventReader.cpp \
+				   TempSensor.cpp \
+				   HudimitySensor.cpp \
+				   PressureSensor.cpp
 
 LOCAL_SHARED_LIBRARIES := libinvensense_hal libcutils libutils libdl
 include $(BUILD_SHARED_LIBRARY)

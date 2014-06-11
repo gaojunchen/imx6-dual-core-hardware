@@ -14,53 +14,41 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_SENSORS_H
-#define ANDROID_SENSORS_H
+#ifndef ANDROID_LIGHT_SENSOR_H
+#define ANDROID_LIGHT_SENSOR_H
 
 #include <stdint.h>
 #include <errno.h>
 #include <sys/cdefs.h>
 #include <sys/types.h>
 
-#include <linux/input.h>
-
-#include <hardware/hardware.h>
-#include <hardware/sensors.h>
-
-__BEGIN_DECLS
+#include "sensors.h"
+#include "SensorBase.h"
+#include "InputEventReader.h"
 
 /*****************************************************************************/
 
-#ifndef ARRAY_SIZE
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
-#endif
+struct input_event;
 
-#define EVENT_TYPE_LIGHT ABS_MISC
-#define EVENT_TYPE_TEMP  ABS_RX
-#define EVENT_TYPE_HUDIMITY ABS_RY
-#define EVENT_TYPE_PRESSURE1 ABS_TILT_X
-#define EVENT_TYPE_PRESSURE2 ABS_TILT_Y
+class LightSensor : public SensorBase {
+    int mEnabled;
+    InputEventCircularReader mInputReader;
+    sensors_event_t mPendingEvent;
+    bool mHasPendingEvent;
+    char input_sysfs_path[PATH_MAX];
+    int input_sysfs_path_len;
 
-#define ID_MPL_BASE (0)
-#define ID_RV (ID_MPL_BASE)
-#define ID_LA (ID_RV + 1)
-#define ID_GR (ID_LA + 1)
-#define ID_GY (ID_GR + 1)
-#define ID_A  (ID_GY + 1)
-#define ID_M  (ID_A + 1)
-#define ID_O  (ID_M + 1)
+    int setInitialState();
 
-#define ID_L  (ID_O + 1)
-#define ID_P  (ID_L + 1)
-#define ID_H  (ID_P + 1)
-#define ID_T  (ID_H + 1)
+public:
+            LightSensor();
+    virtual ~LightSensor();
+    virtual int readEvents(sensors_event_t* data, int count);
+    virtual bool hasPendingEvents() const;
+    virtual int setDelay(int32_t handle, int64_t ns);
+    virtual int enable(int32_t handle, int enabled);
+};
 
 /*****************************************************************************/
 
-/*
- * The SENSORS Module
- */
-
-__END_DECLS
-
-#endif  // ANDROID_SENSORS_H
+#endif  // ANDROID_LIGHT_SENSOR_H
