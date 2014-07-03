@@ -31,12 +31,14 @@
 #define MIXER_WM8960_CAPTURE_SWITCH                 "Capture Switch"
 #define MIXER_WM8960_CAPTURE_VOLUME                 "Capture Volume"
 
-#define MIXER_WM8960_BOOST_SWITCH_L 				"Left Input Mixer Boost Switch"
-#define MIXER_WM8960_BOOST_SWITCH_R 				"Right Input Mixer Boost Switch"
+#define MIXER_WM8960_BOOST_SWITCH_L                 "Left Input Mixer Boost Switch"
+#define MIXER_WM8960_BOOST_SWITCH_L2                "Left Boost Mixer LINPUT2 Switch"
+#define MIXER_WM8960_BOOST_SWITCH_R                 "Right Input Mixer Boost Switch"
 
 #define MIXER_WM8960_INPGAR_IN3R_SWITCH             "INPGAR IN3R Switch"
 #define MIXER_WM8960_MIXINR_IN3R_SWITCH             "MIXINR IN3R Switch"
 #define MIXER_WM8960_MIXINR_IN3R_VOLUME             "MIXINR IN3R Volume"
+
 
 #define MIXER_WM8960_MIXINR_PGA_SWITCH              "MIXINR PGA Switch"
 #define MIXER_WM8960_MIXINR_PGA_VOLUME              "MIXINR PGA Volume"
@@ -121,6 +123,10 @@ static struct route_setting mm_main_mic_input_wm8960[] = {
     },
     {
         .ctl_name = MIXER_WM8960_BOOST_SWITCH_L,
+        .intval = 1,
+    },
+    {
+        .ctl_name = MIXER_WM8960_BOOST_SWITCH_L2,
         .intval = 1,
     },
     {
